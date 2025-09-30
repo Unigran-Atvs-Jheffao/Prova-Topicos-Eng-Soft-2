@@ -30,7 +30,7 @@ jobs:
       # Step 4: Build and start containers
       - name: Start Docker Compose
         run: |
-          docker-compose -f docker-compose.yml up -d --build
+          docker-compose -f compose.yml up -d --build
 
       # Step 5: Wait for DB
       - name: Wait for DB
