@@ -1,6 +1,7 @@
-import express from "express";
-import pkg from "pg";
-import dotenv from "dotenv";
+const express = require("express");
+const pkg = require("pg");
+const dotenv = require("dotenv");
+const path = require("path");
 
 dotenv.config();
 const { Pool } = pkg;
@@ -16,21 +17,20 @@ const pool = new Pool({
   port: 5432,
 });
 
+
+
 app.use(express.json());
+
+app.use(express.static(path.join(__dirname, "public")));
 
 async function initDb() {
   try {
-   
     console.log("Tabela 'users' verificada/criada com sucesso!");
   } catch (err) {
     console.error("Erro ao criar/verificar tabela:", err);
   }
 }
 
-
-app.get("/", (req, res) => {
-  res.send("Aplicação Dockerizada - Jhefferson Marques de Brito")
-});
 
 
 app.get("/users", async (req, res) => {
@@ -107,3 +107,6 @@ app.delete("/users/:id", async (req, res) => {
 app.listen(port, async () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
+
+
+module.exports = app;
