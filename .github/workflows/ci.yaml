@@ -20,24 +20,31 @@ jobs:
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
-      # Step 3: Build and start containers
+      # Step 3: Install Docker Compose
+      - name: Install Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.23.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose version
+
+      # Step 4: Build and start containers
       - name: Start Docker Compose
         run: |
           docker-compose -f docker-compose.yml up -d --build
 
-      # Step 4: Wait for services to be ready (optional, can be customized)
+      # Step 5: Wait for DB
       - name: Wait for DB
         run: |
           echo "Waiting for database to be ready..."
           docker-compose exec -T db bash -c 'until pg_isready -U $${POSTGRES_USER}; do sleep 1; done'
 
-      # Step 5: Run tests inside Node container
+      # Step 6: Run tests inside Node container
       - name: Run tests
         run: |
           docker-compose exec -T api npm install
           docker-compose exec -T api npm test
 
-      # Step 6: Tear down containers
+      # Step 7: Tear down containers
       - name: Stop Docker Compose
         if: always()
         run: docker-compose down
